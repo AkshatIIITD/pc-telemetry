@@ -1,7 +1,7 @@
 Set WshShell = CreateObject("WScript.Shell")
 
 ' 1. Start the React UI server specifically on port 8086 (silently)
-WshShell.CurrentDirectory = "C:\Users\Akshat\Downloads\pc-telemetry"
+WshShell.CurrentDirectory = "C:\Users\Akshat\Downloads\Workspace\pc-telemetry"
 WshShell.Run "cmd /c serve -s dist -l 8086", 0, False
 
 ' Commented out below part as using livelywallpaper
