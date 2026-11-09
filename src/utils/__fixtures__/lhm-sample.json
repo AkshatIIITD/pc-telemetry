@@ -1,0 +1,192 @@
+{
+  "Text": "Sensor",
+  "Value": "",
+  "Children": [
+    {
+      "Text": "PC",
+      "Value": "",
+      "Children": [
+        {
+          "Text": "AMD Ryzen 7 9700X",
+          "Value": "",
+          "Children": [
+            {
+              "Text": "Temperatures",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Core (Tctl/Tdie)",
+                  "Value": "49.6 °C",
+                  "SensorId": "/amdcpu/0/temperature/2",
+                  "Children": []
+                },
+                {
+                  "Text": "CCD1 (Tdie)",
+                  "Value": "50.1 °C",
+                  "SensorId": "/amdcpu/0/temperature/3",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Load",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "CPU Total",
+                  "Value": "4.4 %",
+                  "SensorId": "/amdcpu/0/load/0",
+                  "Children": []
+                },
+                {
+                  "Text": "CPU Core Max",
+                  "Value": "15.6 %",
+                  "SensorId": "/amdcpu/0/load/1",
+                  "Children": []
+                },
+                {
+                  "Text": "CPU Core #1",
+                  "Value": "10.9 %",
+                  "SensorId": "/amdcpu/0/load/2",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Text": "Virtual Memory",
+          "Value": "",
+          "Children": [
+            {
+              "Text": "Load",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Memory",
+                  "Value": "46.3 %",
+                  "SensorId": "/vram/load/1",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Data",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Memory Used",
+                  "Value": "15.5 GB",
+                  "SensorId": "/vram/data/2",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Text": "Total Memory",
+          "Value": "",
+          "Children": [
+            {
+              "Text": "Load",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Memory",
+                  "Value": "40.9 %",
+                  "SensorId": "/ram/load/0",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Data",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Memory Used",
+                  "Value": "12.9 GB",
+                  "SensorId": "/ram/data/0",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Text": "NVIDIA GeForce RTX 5070 Ti",
+          "Value": "",
+          "Children": [
+            {
+              "Text": "Temperatures",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Core",
+                  "Value": "39.4 °C",
+                  "SensorId": "/gpu-nvidia/0/temperature/0",
+                  "Children": []
+                },
+                {
+                  "Text": "GPU Memory Junction",
+                  "Value": "46.0 °C",
+                  "SensorId": "/gpu-nvidia/0/temperature/3",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Load",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Core",
+                  "Value": "5.0 %",
+                  "SensorId": "/gpu-nvidia/0/load/0",
+                  "Children": []
+                },
+                {
+                  "Text": "GPU Memory Controller",
+                  "Value": "31.0 %",
+                  "SensorId": "/gpu-nvidia/0/load/1",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Text": "AMD Radeon(TM) Graphics",
+          "Value": "",
+          "Children": [
+            {
+              "Text": "Temperatures",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU VR SoC",
+                  "Value": "47.0 °C",
+                  "SensorId": "/gpu-amd/0/temperature/4",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Load",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Core",
+                  "Value": "0.0 %",
+                  "SensorId": "/gpu-amd/0/load/0",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

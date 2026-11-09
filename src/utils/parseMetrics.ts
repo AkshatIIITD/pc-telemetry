@@ -1,74 +1,146 @@
-export interface SystemMetrics {
-  cpuTemp: number;
-  cpuLoad: number;
-  gpuTemp: number;
-  gpuLoad: number;
-  ramUsage: number;
+/**
+ * Turns the Libre Hardware Monitor (LHM) `data.json` tree into the handful of
+ * numbers the dashboard shows.
+ *
+ * Sensors are matched by their LHM `SensorId` (for example `/amdcpu/0/load/0`)
+ * instead of by display text. Display text such as "Memory" appears on several
+ * sensors (physical RAM is `/ram/load/0`, virtual memory is `/vram/load/1`),
+ * so matching on text can silently pick the wrong one.
+ */
+
+export interface LhmNode {
+  Text: string;
+  Value?: string;
+  SensorId?: string;
+  Children?: LhmNode[];
 }
 
-export function parseLhmData(node: any, current: Partial<SystemMetrics> = {}): SystemMetrics {
-  if (!node) return current as SystemMetrics;
+export interface SystemMetrics {
+  cpuName: string | null;
+  cpuTemp: number | null;
+  cpuLoad: number | null;
+  gpuName: string | null;
+  gpuTemp: number | null;
+  gpuLoad: number | null;
+  ramUsage: number | null;
+}
 
-  // Track CPU Metrics (AMD Ryzen 7 9700X)
-  if (node.Text?.includes("AMD Ryzen 7 9700X")) {
-    findSensors(node, current, "cpu");
-  }
+export interface ParseOptions {
+  /** SensorId prefixes for the CPU, tried in order. Example: ['/amdcpu/0/'] */
+  cpuIdPrefixes?: string[];
+  /** SensorId prefixes for the GPU, tried in order. Example: ['/gpu-nvidia/0/'] */
+  gpuIdPrefixes?: string[];
+}
 
-  // Track GPU Metrics (NVIDIA GeForce RTX 5070 Ti)
-  if (node.Text?.includes("5070") || node.Text?.includes("NVIDIA")) {
-    findSensors(node, current, "gpu");
-  }
+/** Used before the first successful read, and whenever LHM is unreachable. */
+export const EMPTY_METRICS: SystemMetrics = {
+  cpuName: null,
+  cpuTemp: null,
+  cpuLoad: null,
+  gpuName: null,
+  gpuTemp: null,
+  gpuLoad: null,
+  ramUsage: null,
+};
 
-  // Track RAM Metrics (More flexible matching for 'Memory' or 'Generic Memory')
-  if (node.Text?.includes("Memory")) {
-    findSensors(node, current, "ram");
-  }
+const DEFAULT_CPU_PREFIXES = ['/amdcpu/0/', '/intelcpu/0/'];
+const DEFAULT_GPU_PREFIXES = ['/gpu-nvidia/0/', '/gpu-amd/0/', '/gpu-intel/0/'];
 
-  if (node.Children) {
-    for (const child of node.Children) {
-      parseLhmData(child, current);
-    }
+/** Physical memory load. (`/vram/...` is virtual memory, which we do not want.) */
+const RAM_LOAD_ID = '/ram/load/0';
+
+/** CPU temperature sensor names, best match first. */
+const CPU_TEMP_PREFERENCE = [/Tctl/i, /^CPU Package$/i, /Core \(?Max\)?/i, /Package/i];
+
+interface Sensor {
+  id: string;
+  name: string;
+  value: number | null;
+  /** Name of the hardware node the sensor belongs to, e.g. "AMD Ryzen 7 9700X". */
+  hardware: string | null;
+}
+
+/**
+ * Reads the number out of an LHM value string such as "49.6 °C" or "4.4 %".
+ * Accepts a decimal comma ("49,6 °C") because LHM formats values with the
+ * system locale. Returns null for "-" and other non-numeric values.
+ */
+export function parseSensorValue(raw: string | undefined): number | null {
+  if (!raw) return null;
+  const match = raw.match(/-?\d+(?:[.,]\d+)?/);
+  if (!match) return null;
+  const n = Number(match[0].replace(',', '.'));
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Walks the tree and collects every sensor. The tree looks like:
+ *   Sensor > <computer> > <hardware> > <group, e.g. "Load"> > <sensor>
+ * so a sensor's hardware is its grandparent.
+ */
+function collectSensors(node: LhmNode, ancestors: LhmNode[], out: Sensor[]): void {
+  if (node.SensorId) {
+    out.push({
+      id: node.SensorId,
+      name: node.Text,
+      value: parseSensorValue(node.Value),
+      hardware: ancestors.length >= 2 ? ancestors[ancestors.length - 2].Text : null,
+    });
   }
+  for (const child of node.Children ?? []) {
+    collectSensors(child, [...ancestors, node], out);
+  }
+}
+
+/** Sensors of the first hardware device whose SensorId starts with one of the prefixes. */
+function sensorsForHardware(sensors: Sensor[], prefixes: string[]): Sensor[] {
+  for (const prefix of prefixes) {
+    const matches = sensors.filter((s) => s.id.startsWith(prefix));
+    if (matches.length > 0) return matches;
+  }
+  return [];
+}
+
+function pickCpuTemp(cpu: Sensor[]): Sensor | undefined {
+  const temps = cpu.filter((s) => s.id.includes('/temperature/'));
+  for (const pattern of CPU_TEMP_PREFERENCE) {
+    const found = temps.find((s) => pattern.test(s.name));
+    if (found) return found;
+  }
+  return temps[0];
+}
+
+function pickByName(sensors: Sensor[], kind: 'temperature' | 'load', name: string): Sensor | undefined {
+  const ofKind = sensors.filter((s) => s.id.includes(`/${kind}/`));
+  return ofKind.find((s) => s.name === name) ?? ofKind[0];
+}
+
+const round = (n: number | null | undefined): number | null =>
+  n === null || n === undefined ? null : Math.round(n);
+
+export function parseLhmData(root: LhmNode | null | undefined, options: ParseOptions = {}): SystemMetrics {
+  if (!root) return { ...EMPTY_METRICS };
+
+  const sensors: Sensor[] = [];
+  collectSensors(root, [], sensors);
+
+  const cpuPrefixes = options.cpuIdPrefixes?.length ? options.cpuIdPrefixes : DEFAULT_CPU_PREFIXES;
+  const gpuPrefixes = options.gpuIdPrefixes?.length ? options.gpuIdPrefixes : DEFAULT_GPU_PREFIXES;
+
+  const cpu = sensorsForHardware(sensors, cpuPrefixes);
+  const gpu = sensorsForHardware(sensors, gpuPrefixes);
+
+  const cpuLoad = cpu.find((s) => s.id.includes('/load/') && s.name === 'CPU Total');
+  const ram =
+    sensors.find((s) => s.id === RAM_LOAD_ID) ?? sensors.find((s) => s.id.startsWith('/ram/load/'));
 
   return {
-    cpuTemp: Math.round(current.cpuTemp || 0),
-    cpuLoad: Math.round(current.cpuLoad || 0),
-    gpuTemp: Math.round(current.gpuTemp || 0),
-    gpuLoad: Math.round(current.gpuLoad || 0),
-    ramUsage: Math.round(current.ramUsage || 0),
+    cpuName: cpu[0]?.hardware ?? null,
+    cpuTemp: round(pickCpuTemp(cpu)?.value),
+    cpuLoad: round(cpuLoad?.value),
+    gpuName: gpu[0]?.hardware ?? null,
+    gpuTemp: round(pickByName(gpu, 'temperature', 'GPU Core')?.value),
+    gpuLoad: round(pickByName(gpu, 'load', 'GPU Core')?.value),
+    ramUsage: round(ram?.value),
   };
-}
-
-function findSensors(node: any, current: any, type: "cpu" | "gpu" | "ram") {
-  if (!node.Children) return;
-
-  for (const child of node.Children) {
-    if (type === "cpu" && child.Text === "Temperatures") {
-      const tempNode = child.Children?.find((c: any) => 
-        c.Text?.includes("Tctl") || c.Text?.includes("Core (Max)") || c.Text === "CPU Core"
-      );
-      if (tempNode) current.cpuTemp = parseFloat(tempNode.Value);
-    }
-    if (type === "cpu" && child.Text === "Load") {
-      const totalLoad = child.Children?.find((c: any) => c.Text === "CPU Total");
-      if (totalLoad) current.cpuLoad = parseFloat(totalLoad.Value);
-    }
-    if (type === "gpu" && child.Text === "Temperatures") {
-      const gpuCore = child.Children?.find((c: any) => c.Text === "GPU Core");
-      if (gpuCore) current.gpuTemp = parseFloat(gpuCore.Value);
-    }
-    if (type === "gpu" && child.Text === "Load") {
-      const gpuLoad = child.Children?.find((c: any) => c.Text === "GPU Core");
-      if (gpuLoad) current.gpuLoad = parseFloat(gpuLoad.Value);
-    }
-    if (type === "ram" && child.Text === "Load") {
-      // Find the row tracking actual physical memory utilization percentage
-      const memoryLoad = child.Children?.find((c: any) => 
-        c.Text === "Memory" || c.Text?.includes("Load")
-      );
-      if (memoryLoad) current.ramUsage = parseFloat(memoryLoad.Value);
-    }
-    
-    findSensors(child, current, type);
-  }
 }

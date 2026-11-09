@@ -1,8 +1,12 @@
+Set fso = CreateObject("Scripting.FileSystemObject")
 Set WshShell = CreateObject("WScript.Shell")
 
-' 1. Start the React UI server specifically on port 8086 (silently)
-WshShell.CurrentDirectory = "C:\Users\Akshat\Downloads\Workspace\pc-telemetry"
-WshShell.Run "cmd /c serve -s dist -l 8086", 0, False
+' Run from the folder this script lives in, so no path to edit
+WshShell.CurrentDirectory = fso.GetParentFolderName(WScript.ScriptFullName)
+
+' Serve the production build on localhost only, silently
+WshShell.Run "cmd /c serve -s dist -l tcp://127.0.0.1:8086", 0, False
+
 
 ' Commented out below part as using livelywallpaper
 
