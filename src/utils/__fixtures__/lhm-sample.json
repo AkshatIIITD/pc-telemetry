@@ -11,6 +11,48 @@
           "Value": "",
           "Children": [
             {
+              "Text": "Powers",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Package",
+                  "Value": "34.5 W",
+                  "SensorId": "/amdcpu/0/power/0",
+                  "Children": []
+                },
+                {
+                  "Text": "Core #1 (SMU)",
+                  "Value": "1.7 W",
+                  "SensorId": "/amdcpu/0/power/1",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Text": "Clocks",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "Bus Speed",
+                  "Value": "99.8 MHz",
+                  "SensorId": "/amdcpu/0/clock/0",
+                  "Children": []
+                },
+                {
+                  "Text": "Cores (Average)",
+                  "Value": "5142.0 MHz",
+                  "SensorId": "/amdcpu/0/clock/1",
+                  "Children": []
+                },
+                {
+                  "Text": "Core #1",
+                  "Value": "5300.0 MHz",
+                  "SensorId": "/amdcpu/0/clock/3",
+                  "Children": []
+                }
+              ]
+            },
+            {
               "Text": "Temperatures",
               "Value": "",
               "Children": [
@@ -79,6 +121,12 @@
                   "Value": "15.5 GB",
                   "SensorId": "/vram/data/2",
                   "Children": []
+                },
+                {
+                  "Text": "Memory Available",
+                  "Value": "18.0 GB",
+                  "SensorId": "/vram/data/3",
+                  "Children": []
                 }
               ]
             }
@@ -109,6 +157,12 @@
                   "Value": "12.9 GB",
                   "SensorId": "/ram/data/0",
                   "Children": []
+                },
+                {
+                  "Text": "Memory Available",
+                  "Value": "18.6 GB",
+                  "SensorId": "/ram/data/1",
+                  "Children": []
                 }
               ]
             }
@@ -118,6 +172,18 @@
           "Text": "NVIDIA GeForce RTX 5070 Ti",
           "Value": "",
           "Children": [
+            {
+              "Text": "Powers",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Package",
+                  "Value": "25.4 W",
+                  "SensorId": "/gpu-nvidia/0/power/0",
+                  "Children": []
+                }
+              ]
+            },
             {
               "Text": "Temperatures",
               "Value": "",
@@ -153,6 +219,30 @@
                   "Children": []
                 }
               ]
+            },
+            {
+              "Text": "Data",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Memory Free",
+                  "Value": "14685.0 MB",
+                  "SensorId": "/gpu-nvidia/0/smalldata/0",
+                  "Children": []
+                },
+                {
+                  "Text": "GPU Memory Used",
+                  "Value": "1617.0 MB",
+                  "SensorId": "/gpu-nvidia/0/smalldata/1",
+                  "Children": []
+                },
+                {
+                  "Text": "GPU Memory Total",
+                  "Value": "16303.0 MB",
+                  "SensorId": "/gpu-nvidia/0/smalldata/2",
+                  "Children": []
+                }
+              ]
             }
           ]
         },
@@ -160,6 +250,24 @@
           "Text": "AMD Radeon(TM) Graphics",
           "Value": "",
           "Children": [
+            {
+              "Text": "Powers",
+              "Value": "",
+              "Children": [
+                {
+                  "Text": "GPU Core",
+                  "Value": "16.0 W",
+                  "SensorId": "/gpu-amd/0/power/0",
+                  "Children": []
+                },
+                {
+                  "Text": "GPU SoC",
+                  "Value": "11.0 W",
+                  "SensorId": "/gpu-amd/0/power/2",
+                  "Children": []
+                }
+              ]
+            },
             {
               "Text": "Temperatures",
               "Value": "",

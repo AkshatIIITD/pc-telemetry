@@ -7,7 +7,8 @@ A minimalist, high-contrast hardware dashboard for a small 480x800 portrait scre
 ## Features
 
 - CPU temperature and load, GPU temperature and load, and RAM usage, refreshed every second
-- Temperature bars shift from blue to red as the hardware heats up
+- Power, clock and VRAM stats, and 60-second load sparklines.
+- Temperature bars shift to red as the hardware heats up
 - Hardware names are read from the data, so nothing is hardcoded for one machine
 - Shows `--` and an `LHM OFFLINE` label when data is unavailable, instead of stale or zero values
 - Runs as a static build with very low CPU and memory overhead
@@ -121,13 +122,15 @@ The dashboard only needs `localhost`. Libre Hardware Monitor's web server and `s
 
 ```
 src/
-  App.tsx                   dashboard UI
-  hooks/useLhmMetrics.ts    polling, timeouts, offline state
-  utils/parseMetrics.ts     turns LHM data.json into the numbers shown
+  App.tsx                     dashboard UI
+  hooks/useLhmMetrics.ts      polling, timeouts, offline state
+  utils/parseMetrics.ts       turns LHM data.json into the numbers shown
   utils/parseMetrics.test.ts
-  utils/__fixtures__/       trimmed sample of LHM data used by the tests
-scripts/list-sensors.mjs    prints every sensor with its ID
-LaunchTelemetry.vbs         starts the static server on Windows login
+  utils/tempColor.ts          maintains color of temperature bar
+  utils/tempColor.test.ts
+  utils/__fixtures__/         trimmed sample of LHM data used by the tests
+scripts/list-sensors.mjs      prints every sensor with its ID
+LaunchTelemetry.vbs           starts the static server on Windows login
 ```
 
 ## License
