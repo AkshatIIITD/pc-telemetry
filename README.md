@@ -2,7 +2,7 @@
 
 A minimalist, high-contrast hardware dashboard for a small 480x800 portrait screen inside my PC. It shows live CPU, GPU and RAM stats and runs as a wallpaper on that screen.
 
-![PC Telemetry running on a 5-inch display](docs/hero.jpg)
+![PC Telemetry running on a 5-inch display](docs/screenshot.jpg)
 
 ## Features
 
